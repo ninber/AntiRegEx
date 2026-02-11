@@ -1,5 +1,5 @@
 # Anti-Regex Name Generator
-# Test [here](https://ninber.github.io/antiregex/)
+# Test [here](https://ninber.github.io/AntiRegEx/)
 Generate **human-readable name variations** that are difficult to detect
 or filter using simple regular expressions.
 
