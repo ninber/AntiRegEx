@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Anti Regex Generator</title>
+</head>
+<body>
+
+<script type="module">
+  import { generateVariants } from './antiRegexName.js';
+
+  const variants = generateVariants("mySuperWebSite", {
+    mutation: { enabled: true, leet: true },
+    noise: { enabled: true },
+    template: { enabled: true },
+    separator: { enabled: true },
+    casing: { enabled: true },
+    count: 10
+  });
+
+  console.log(variants);
+</script>
+
+</body>
+</html>
