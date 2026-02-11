@@ -1,9 +1,9 @@
 // antiRegexName.js
-// Human-Readable Anti-Regex Name Generator
-// ES Module — GitHub Pages compatible
+// Advanced Human-Readable Anti-Regex Generator
+// Lightweight, ES Module compatible
 
 /* =========================
-   Utility Functions
+   Utilities
 ========================= */
 
 function splitCamelCase(str) {
@@ -27,12 +27,11 @@ function shuffleArray(arr) {
 }
 
 /* =========================
-   Anchored Scrambling
+   Anchored Scramble
 ========================= */
 
 function scrambleInteriorAnchored(word, fixFirst, fixLast) {
   const len = word.length;
-
   if (len < 4) return word;
   if (fixFirst + fixLast >= len - 1) return word;
 
@@ -40,23 +39,31 @@ function scrambleInteriorAnchored(word, fixFirst, fixLast) {
   const end = word.slice(len - fixLast);
   const middle = word.slice(fixFirst, len - fixLast).split("");
 
-  const shuffled = shuffleArray(middle);
-
-  return start + shuffled.join("") + end;
+  return start + shuffleArray(middle).join("") + end;
 }
 
 /* =========================
-   Substitution
+   Synonym Replacement
 ========================= */
 
-function substituteWord(word, map) {
-  return map[word] || word;
+function substituteSynonym(word, synonymMap) {
+  if (!synonymMap[word]) return word;
+  return randomChoice(synonymMap[word]);
 }
 
-function substituteChars(word, map) {
+/* =========================
+   Non-Deterministic Char Map
+========================= */
+
+function substituteCharsRandom(word, charMap) {
   return word
     .split("")
-    .map(c => map[c] || c)
+    .map(c => {
+      if (charMap[c]) {
+        return randomChoice(charMap[c]);
+      }
+      return c;
+    })
     .join("");
 }
 
@@ -80,22 +87,25 @@ export function generateVariants(input, userConfig = {}) {
       fixLast: 1
     },
 
-    substitution: {
+    synonym: {
       enabled: true,
       probability: 0.4,
-      wordMap: {
-        for: "4",
-        to: "2",
-        you: "u",
-        are: "r",
-        and: "n"
-      },
+      map: {
+        site: ["site", "hub", "page", "portal"],
+        web: ["web", "net", "online"],
+        super: ["super", "ultra", "hyper"]
+      }
+    },
+
+    substitution: {
+      enabled: true,
+      probability: 0.5,
       charMap: {
-        a: "4",
-        e: "3",
-        i: "1",
-        o: "0",
-        s: "5"
+        a: ["a", "4"],
+        e: ["e", "3", "€"],
+        i: ["i", "1"],
+        o: ["o", "0"],
+        s: ["s", "5", "$", "z"]
       }
     },
 
@@ -112,12 +122,13 @@ export function generateVariants(input, userConfig = {}) {
     count: 10
   };
 
-  // Deep merge for nested objects
+  // Deep merge
   const config = {
     ...defaultConfig,
     ...userConfig,
     template: { ...defaultConfig.template, ...userConfig.template },
     scramble: { ...defaultConfig.scramble, ...userConfig.scramble },
+    synonym: { ...defaultConfig.synonym, ...userConfig.synonym },
     substitution: { ...defaultConfig.substitution, ...userConfig.substitution },
     separator: { ...defaultConfig.separator, ...userConfig.separator },
     casing: { ...defaultConfig.casing, ...userConfig.casing }
@@ -130,42 +141,27 @@ export function generateVariants(input, userConfig = {}) {
 
     let words = [...baseWords];
 
-    /* =========================
-       TEMPLATE STEP
-    ========================= */
-
+    /* TEMPLATE */
     if (config.template.enabled && config.template.templates.length) {
       const t = randomChoice(config.template.templates);
 
       if (t === "shuffle") words = shuffleArray(words);
-
-      if (t === "dropOne" && words.length > 1) {
+      if (t === "dropOne" && words.length > 1)
         words.splice(Math.floor(Math.random() * words.length), 1);
-      }
-
       if (t === "reverse") words.reverse();
     }
 
-    /* =========================
-       SUBSTITUTION STEP
-    ========================= */
-
-    if (config.substitution.enabled) {
-      words = words.map(w => {
-        if (maybe(config.substitution.probability)) {
-          w = substituteWord(w, config.substitution.wordMap);
-          w = substituteChars(w, config.substitution.charMap);
-        }
-        return w;
-      });
+    /* SYNONYMS */
+    if (config.synonym.enabled) {
+      words = words.map(w =>
+        maybe(config.synonym.probability)
+          ? substituteSynonym(w, config.synonym.map)
+          : w
+      );
     }
 
-    /* =========================
-       SCRAMBLE STEP
-    ========================= */
-
+    /* SCRAMBLE */
     let forceSeparator = false;
-
     if (config.scramble.enabled) {
       words = words.map(w => {
         if (maybe(config.scramble.probability)) {
@@ -180,32 +176,32 @@ export function generateVariants(input, userConfig = {}) {
       });
     }
 
-    /* =========================
-       SEPARATOR STEP
-    ========================= */
+    /* CHAR SUBSTITUTION */
+    if (config.substitution.enabled) {
+      words = words.map(w =>
+        maybe(config.substitution.probability)
+          ? substituteCharsRandom(w, config.substitution.charMap)
+          : w
+      );
+    }
 
+    /* SEPARATOR */
     let separator = "";
-
     if ((config.separator.enabled && config.separator.separators.length) || forceSeparator) {
       separator = randomChoice(config.separator.separators);
     }
 
     let combined = words.join(separator);
 
-    /* =========================
-       CASING STEP
-    ========================= */
-
+    /* CASING */
     if (config.casing.enabled && config.casing.modes.length) {
       const mode = randomChoice(config.casing.modes);
 
-      if (mode === "lower") {
-        combined = combined.toLowerCase();
-      }
+      if (mode === "lower") combined = combined.toLowerCase();
 
       if (mode === "camel") {
-        const parts = combined.split(separator);
-        combined = parts
+        combined = combined
+          .split(separator)
           .map((w, i) =>
             i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)
           )
@@ -213,8 +209,8 @@ export function generateVariants(input, userConfig = {}) {
       }
 
       if (mode === "pascal") {
-        const parts = combined.split(separator);
-        combined = parts
+        combined = combined
+          .split(separator)
           .map(w => w.charAt(0).toUpperCase() + w.slice(1))
           .join(separator);
       }
