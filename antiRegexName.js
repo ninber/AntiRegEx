@@ -1,5 +1,10 @@
 // antiRegexName.js
+// Human-Readable Anti-Regex Name Generator
 // ES Module — GitHub Pages compatible
+
+/* =========================
+   Utility Functions
+========================= */
 
 function splitCamelCase(str) {
   return str
@@ -17,169 +22,205 @@ function maybe(prob) {
   return Math.random() < prob;
 }
 
-function shuffle(arr) {
+function shuffleArray(arr) {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
-function mutateWord(word, config) {
-  if (!config.enabled) return word;
+/* =========================
+   Anchored Scrambling
+========================= */
 
-  let w = word;
+function scrambleInteriorAnchored(word, fixFirst, fixLast) {
+  const len = word.length;
 
-  if (config.vowelSwap && maybe(config.probability)) {
-    w = w.replace(/[aeiou]/, v =>
-      randomChoice(["a", "e", "i", "o", "u"])
-    );
-  }
+  if (len < 4) return word;
+  if (fixFirst + fixLast >= len - 1) return word;
 
-  if (config.doubleLetter && maybe(config.probability)) {
-    const i = Math.floor(Math.random() * w.length);
-    w = w.slice(0, i) + w[i] + w.slice(i);
-  }
+  const start = word.slice(0, fixFirst);
+  const end = word.slice(len - fixLast);
+  const middle = word.slice(fixFirst, len - fixLast).split("");
 
-  if (config.removeLetter && maybe(config.probability)) {
-    const i = Math.floor(Math.random() * w.length);
-    w = w.slice(0, i) + w.slice(i + 1);
-  }
+  const shuffled = shuffleArray(middle);
 
-  if (config.leet && maybe(config.probability)) {
-    w = w.replace(/o/g, "0").replace(/e/g, "3");
-  }
-
-  return w;
+  return start + shuffled.join("") + end;
 }
 
-function applyCasing(words, config) {
-  if (!config.enabled) return words.join("");
+/* =========================
+   Substitution
+========================= */
 
-  const mode = randomChoice(config.modes);
-
-  switch (mode) {
-    case "lower":
-      return words.join("").toLowerCase();
-    case "upper":
-      return words.join("").toUpperCase();
-    case "camel":
-      return words
-        .map((w, i) =>
-          i === 0 ? w : w[0].toUpperCase() + w.slice(1)
-        )
-        .join("");
-    case "pascal":
-      return words
-        .map(w => w[0].toUpperCase() + w.slice(1))
-        .join("");
-    case "random":
-      return words
-        .join("")
-        .split("")
-        .map(c =>
-          maybe(0.5) ? c.toUpperCase() : c.toLowerCase()
-        )
-        .join("");
-    default:
-      return words.join("");
-  }
+function substituteWord(word, map) {
+  return map[word] || word;
 }
 
-function applySeparator(words, config) {
-  if (!config.enabled) return words;
-
-  const sep = randomChoice(config.separators);
-  return words.join(sep);
+function substituteChars(word, map) {
+  return word
+    .split("")
+    .map(c => map[c] || c)
+    .join("");
 }
 
-function injectNoise(words, config) {
-  if (!config.enabled) return words;
-
-  if (!maybe(config.probability)) return words;
-
-  const noise = randomChoice(config.words);
-
-  const position = Math.floor(Math.random() * (words.length + 1));
-  const newWords = [...words];
-  newWords.splice(position, 0, noise);
-
-  return newWords;
-}
-
-function applyTemplate(words, config) {
-  if (!config.enabled) return words;
-
-  const template = randomChoice(config.templates);
-
-  switch (template) {
-    case "shuffle":
-      return shuffle(words);
-    case "dropOne":
-      if (words.length > 1) {
-        const i = Math.floor(Math.random() * words.length);
-        return words.filter((_, idx) => idx !== i);
-      }
-      return words;
-    case "reverse":
-      return [...words].reverse();
-    case "duplicateOne":
-      const i = Math.floor(Math.random() * words.length);
-      return [...words, words[i]];
-    default:
-      return words;
-  }
-}
+/* =========================
+   Main Generator
+========================= */
 
 export function generateVariants(input, userConfig = {}) {
+
   const defaultConfig = {
+
     template: {
       enabled: true,
-      templates: ["shuffle", "dropOne", "reverse", "duplicateOne"]
+      templates: ["shuffle", "dropOne", "reverse"]
     },
-    mutation: {
+
+    scramble: {
+      enabled: true,
+      probability: 0.5,
+      fixFirst: 1,
+      fixLast: 1
+    },
+
+    substitution: {
       enabled: true,
       probability: 0.4,
-      vowelSwap: true,
-      doubleLetter: true,
-      removeLetter: false,
-      leet: false
+      wordMap: {
+        for: "4",
+        to: "2",
+        you: "u",
+        are: "r",
+        and: "n"
+      },
+      charMap: {
+        a: "4",
+        e: "3",
+        i: "1",
+        o: "0",
+        s: "5"
+      }
     },
-    noise: {
-      enabled: true,
-      probability: 0.4,
-      words: ["now", "maybe", "hub", "online", "zone", "base"]
-    },
+
     separator: {
       enabled: true,
-      separators: ["-", "_", ".", "", ":"]
+      separators: ["-", "_", ".", ":"]
     },
+
     casing: {
       enabled: true,
-      modes: ["camel", "pascal", "lower", "random"]
+      modes: ["camel", "pascal", "lower"]
     },
+
     count: 10
   };
 
-  const config = { ...defaultConfig, ...userConfig };
+  // Deep merge for nested objects
+  const config = {
+    ...defaultConfig,
+    ...userConfig,
+    template: { ...defaultConfig.template, ...userConfig.template },
+    scramble: { ...defaultConfig.scramble, ...userConfig.scramble },
+    substitution: { ...defaultConfig.substitution, ...userConfig.substitution },
+    separator: { ...defaultConfig.separator, ...userConfig.separator },
+    casing: { ...defaultConfig.casing, ...userConfig.casing }
+  };
 
   const baseWords = splitCamelCase(input);
-
   const results = new Set();
 
   while (results.size < config.count) {
+
     let words = [...baseWords];
 
-    words = applyTemplate(words, config.template);
+    /* =========================
+       TEMPLATE STEP
+    ========================= */
 
-    words = words.map(w => mutateWord(w, config.mutation));
+    if (config.template.enabled && config.template.templates.length) {
+      const t = randomChoice(config.template.templates);
 
-    words = injectNoise(words, config.noise);
+      if (t === "shuffle") words = shuffleArray(words);
 
-    const separated = applySeparator(words, config.separator);
+      if (t === "dropOne" && words.length > 1) {
+        words.splice(Math.floor(Math.random() * words.length), 1);
+      }
 
-    const final = applyCasing(
-      separated.split(/[-_.:]/),
-      config.casing
-    );
+      if (t === "reverse") words.reverse();
+    }
 
-    results.add(final);
+    /* =========================
+       SUBSTITUTION STEP
+    ========================= */
+
+    if (config.substitution.enabled) {
+      words = words.map(w => {
+        if (maybe(config.substitution.probability)) {
+          w = substituteWord(w, config.substitution.wordMap);
+          w = substituteChars(w, config.substitution.charMap);
+        }
+        return w;
+      });
+    }
+
+    /* =========================
+       SCRAMBLE STEP
+    ========================= */
+
+    let forceSeparator = false;
+
+    if (config.scramble.enabled) {
+      words = words.map(w => {
+        if (maybe(config.scramble.probability)) {
+          forceSeparator = true;
+          return scrambleInteriorAnchored(
+            w,
+            config.scramble.fixFirst,
+            config.scramble.fixLast
+          );
+        }
+        return w;
+      });
+    }
+
+    /* =========================
+       SEPARATOR STEP
+    ========================= */
+
+    let separator = "";
+
+    if ((config.separator.enabled && config.separator.separators.length) || forceSeparator) {
+      separator = randomChoice(config.separator.separators);
+    }
+
+    let combined = words.join(separator);
+
+    /* =========================
+       CASING STEP
+    ========================= */
+
+    if (config.casing.enabled && config.casing.modes.length) {
+      const mode = randomChoice(config.casing.modes);
+
+      if (mode === "lower") {
+        combined = combined.toLowerCase();
+      }
+
+      if (mode === "camel") {
+        const parts = combined.split(separator);
+        combined = parts
+          .map((w, i) =>
+            i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)
+          )
+          .join(separator);
+      }
+
+      if (mode === "pascal") {
+        const parts = combined.split(separator);
+        combined = parts
+          .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(separator);
+      }
+    }
+
+    results.add(combined);
   }
 
   return Array.from(results);
