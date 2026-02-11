@@ -1,71 +1,77 @@
+# Anti-Regex Name Generator
 
-
-Anti-Regex Name Generator
-
-Generate human-readable name variations that are difficult to detect or filter using simple regular expressions.
+Generate **human-readable name variations** that are difficult to detect
+or filter using simple regular expressions.
 
 Designed for:
-	•	Anti-scraping strategies
-	•	Preventing automated website mention removal
-	•	Avoiding naive pattern-based filtering
-	•	Generating polymorphic brand mentions
 
-This module produces structurally inconsistent variations of a base name while keeping them readable to humans.
+-   Anti-scraping strategies\
+-   Preventing automated website mention removal\
+-   Avoiding naive pattern-based filtering\
+-   Generating polymorphic brand mentions
 
-⸻
+This module produces structurally inconsistent variations of a base name
+while keeping them readable to humans.
 
-✨ Features
-	•	ES Module (native browser support)
-	•	GitHub Pages compatible
-	•	Fully configurable mutation pipeline
-	•	Optional transformation steps
-	•	Optional templates inside each step
-	•	Returns 10 random variations by default
-	•	Zero dependencies
+------------------------------------------------------------------------
 
-⸻
+## ✨ Features
 
-🧠 How It Works
+-   ES Module (native browser support)
+-   GitHub Pages compatible
+-   Fully configurable mutation pipeline
+-   Optional transformation steps
+-   Optional templates inside each step
+-   Returns 10 random variations by default
+-   Zero dependencies
 
-Instead of applying one predictable transformation (like camelCase → kebab-case), the generator uses structural polymorphism:
-	•	Word shuffling
-	•	Optional word dropping
-	•	Optional duplication
-	•	Character mutations
-	•	Noise injection
-	•	Random separators
-	•	Random casing modes
+------------------------------------------------------------------------
+
+## 🧠 How It Works
+
+Instead of applying one predictable transformation (like
+`camelCase → kebab-case`), the generator uses structural polymorphism:
+
+-   Word shuffling
+-   Optional word dropping
+-   Optional duplication
+-   Character mutations
+-   Noise injection
+-   Random separators
+-   Random casing modes
 
 Each output may differ in:
-	•	Word count
-	•	Word order
-	•	Word mutation
-	•	Separator usage
-	•	Casing style
 
-Because no stable structure exists, simple regex filters cannot reliably match outputs without explicit enumeration.
+-   Word count
+-   Word order
+-   Word mutation
+-   Separator usage
+-   Casing style
 
-⸻
+Because no stable structure exists, simple regex filters cannot reliably
+match outputs without explicit enumeration.
 
-📦 Installation
+------------------------------------------------------------------------
+
+## 📦 Installation
 
 No installation required.
 
-Just copy antiRegexName.js into your project.
+Just copy `antiRegexName.js` into your project.
 
 For GitHub Pages:
 
-/your-project
- ├── index.html
- └── antiRegexName.js
+    /your-project
+     ├── index.html
+     └── antiRegexName.js
 
+------------------------------------------------------------------------
 
-⸻
+## 🚀 Usage
 
-🚀 Usage
+### Basic Example
 
-Basic Example
-
+``` html
 <script type="module">
   import { generateVariants } from './antiRegexName.js';
 
@@ -73,14 +79,15 @@ Basic Example
 
   console.log(results);
 </script>
+```
 
+------------------------------------------------------------------------
 
-⸻
-
-⚙ Configuration
+## ⚙ Configuration
 
 You can enable or disable any step.
 
+``` js
 generateVariants("mySuperWebSite", {
   template: {
     enabled: true,
@@ -109,146 +116,85 @@ generateVariants("mySuperWebSite", {
   },
   count: 10
 });
+```
 
+------------------------------------------------------------------------
 
-⸻
-
-🧩 Configuration Options
-
-1️⃣ Template Step
-
-Controls structural transformations.
-
-Available templates:
-	•	"shuffle" – random word order
-	•	"dropOne" – removes one word
-	•	"reverse" – reverses word order
-	•	"duplicateOne" – duplicates a random word
-
-⸻
-
-2️⃣ Mutation Step
-
-Character-level transformations.
-
-Options:
-	•	vowelSwap
-	•	doubleLetter
-	•	removeLetter
-	•	leet
-
-Each applied probabilistically.
-
-⸻
-
-3️⃣ Noise Injection
-
-Adds neutral words to break structural predictability.
-
-Example noise words:
-
-["now", "maybe", "hub", "online", "zone"]
-
-
-⸻
-
-4️⃣ Separator Step
-
-Randomly joins words using:
-
-["-", "_", ".", "", ":"]
-
-
-⸻
-
-5️⃣ Casing Step
-
-Modes:
-	•	lower
-	•	upper
-	•	camel
-	•	pascal
-	•	random
-
-⸻
-
-📤 Output
+## 📤 Output
 
 Returns:
 
+``` js
 Array<string>
+```
 
 Default length: 10
 
 Example output:
 
-[
-  "mySuperWeb",
-  "super-webSite",
-  "mysuuperweb",
-  "webZoneMySuper",
-  "myS0perWebNow",
-  "super:webMy",
-  "almostMyWeb",
-  "webmysuper",
-  "myWebHubSuper",
-  "mysuperwebsite"
-]
+    [
+      "mySuperWeb",
+      "super-webSite",
+      "mysuuperweb",
+      "webZoneMySuper",
+      "myS0perWebNow",
+      "super:webMy",
+      "almostMyWeb",
+      "webmysuper",
+      "myWebHubSuper",
+      "mysuperwebsite"
+    ]
 
 Each result is intentionally structurally inconsistent.
 
-⸻
+------------------------------------------------------------------------
 
-🛡 Why This Is Hard to Regex-Filter
+## 🛡 Why This Is Hard to Regex-Filter
 
 Regex depends on:
-	•	Stable word order
-	•	Stable separators
-	•	Stable casing
-	•	Stable character classes
-	•	Stable length patterns
+
+-   Stable word order
+-   Stable separators
+-   Stable casing
+-   Stable character classes
+-   Stable length patterns
 
 This generator breaks all of those.
 
 To filter reliably, a system would need:
-	•	Full enumeration
-	•	Semantic token detection
-	•	Fuzzy matching
-	•	NLP parsing
+
+-   Full enumeration
+-   Semantic token detection
+-   Fuzzy matching
+-   NLP parsing
 
 Simple pattern matching becomes ineffective.
 
-⸻
+------------------------------------------------------------------------
 
-🔧 Extending the Generator
+## 🔧 Extending the Generator
 
 You can enhance resistance further by adding:
-	•	Synonym substitution
-	•	Homoglyph injection
-	•	Zero-width characters
-	•	Character transposition
-	•	Larger noise dictionaries
-	•	Entropy scoring
 
-⸻
+-   Synonym substitution
+-   Homoglyph injection
+-   Zero-width characters
+-   Character transposition
+-   Larger noise dictionaries
+-   Entropy scoring
 
-⚠ Disclaimer
+------------------------------------------------------------------------
 
-This tool is intended for legitimate anti-scraping and pattern-avoidance use cases.
+## ⚠ Disclaimer
 
-Ensure you comply with platform rules, applicable laws, and ethical standards when deploying.
+This tool is intended for legitimate anti-scraping and pattern-avoidance
+use cases.
 
-⸻
+Ensure you comply with platform rules, applicable laws, and ethical
+standards when deploying.
 
-📄 License
+------------------------------------------------------------------------
 
-MIT — free to use, modify, and distribute.
+## 📄 License
 
-⸻
-
-If you want, I can also generate:
-	•	A demo page for GitHub Pages
-	•	A visual playground UI
-	•	A version with entropy scoring
-	•	A CDN-friendly build
-	•	NPM packaging configuration
+MIT --- free to use, modify, and distribute.
