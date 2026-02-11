@@ -7,98 +7,97 @@
 
 <style>
 :root {
-  --bg: #0f172a;
-  --card: #1e293b;
-  --accent: #38bdf8;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
+  --bg:#0f172a;
+  --card:#1e293b;
+  --accent:#38bdf8;
+  --text:#e2e8f0;
+  --muted:#94a3b8;
 }
 
 body {
-  margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  padding: 40px 20px;
-  display: flex;
-  justify-content: center;
+  margin:0;
+  font-family:system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  padding:40px 20px;
+  display:flex;
+  justify-content:center;
 }
 
 .container {
-  max-width: 1000px;
-  width: 100%;
+  max-width:1100px;
+  width:100%;
 }
 
-h1 {
-  text-align: center;
-}
-
+h1 { text-align:center; }
 .subtitle {
-  text-align: center;
-  color: var(--muted);
-  margin-bottom: 30px;
+  text-align:center;
+  color:var(--muted);
+  margin-bottom:30px;
 }
 
 .card {
-  background: var(--card);
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
+  background:var(--card);
+  padding:20px;
+  border-radius:12px;
+  margin-bottom:20px;
 }
 
 label {
-  display: block;
-  margin-top: 10px;
-  font-size: 14px;
-  color: var(--muted);
+  display:block;
+  margin-top:10px;
+  font-size:14px;
+  color:var(--muted);
 }
 
 input, textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  border-radius: 6px;
-  border: none;
-  background: #0b1220;
-  color: var(--text);
+  width:100%;
+  padding:8px;
+  margin-top:4px;
+  border-radius:6px;
+  border:none;
+  background:#0b1220;
+  color:var(--text);
+  font-family:monospace;
 }
 
+textarea { resize:vertical; }
+
 .row {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
+  display:flex;
+  gap:15px;
+  flex-wrap:wrap;
 }
 
 .row > div {
-  flex: 1;
-  min-width: 200px;
+  flex:1;
+  min-width:200px;
 }
 
 button {
-  margin-top: 20px;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 8px;
-  background: var(--accent);
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
+  margin-top:15px;
+  padding:10px 18px;
+  border:none;
+  border-radius:8px;
+  background:var(--accent);
+  color:black;
+  font-weight:bold;
+  cursor:pointer;
 }
 
-button:hover {
-  opacity: 0.9;
-}
+button:hover { opacity:0.9; }
 
 pre {
-  background: #0b1220;
-  padding: 15px;
-  border-radius: 8px;
-  overflow-x: auto;
+  background:#0b1220;
+  padding:15px;
+  border-radius:8px;
+  overflow-x:auto;
+  white-space:pre-wrap;
 }
 
 .small {
-  font-size: 12px;
-  color: var(--muted);
+  font-size:12px;
+  color:var(--muted);
 }
 </style>
 </head>
@@ -111,12 +110,12 @@ pre {
 Human-Readable Structural Polymorphism Engine
 </p>
 
-<!-- BASIC SETTINGS -->
+<!-- BASIC -->
 <div class="card">
   <label>Base Name</label>
   <input id="baseName" value="mySuperWebSite">
 
-  <label>Number of Variants</label>
+  <label>Variant Count</label>
   <input id="count" type="number" value="10" min="1" max="50">
 </div>
 
@@ -130,45 +129,64 @@ Human-Readable Structural Polymorphism Engine
 
 <!-- SCRAMBLE -->
 <div class="card">
-  <h3>Anchored Scrambling</h3>
+  <h3>Anchored Scramble</h3>
   <label><input type="checkbox" id="scrambleEnabled" checked> Enable</label>
 
   <div class="row">
     <div>
-      <label>Probability (0–1)</label>
+      <label>Probability</label>
       <input id="scrambleProb" type="number" step="0.1" value="0.5">
     </div>
     <div>
-      <label>Fix First X Letters</label>
+      <label>Fix First X</label>
       <input id="fixFirst" type="number" value="1">
     </div>
     <div>
-      <label>Fix Last Y Letters</label>
+      <label>Fix Last Y</label>
       <input id="fixLast" type="number" value="1">
     </div>
   </div>
 
   <p class="small">
-  If fixFirst + fixLast ≥ word length − 1 → word is not scrambled.
+    If fixFirst + fixLast ≥ word length − 1 → no scrambling applied.
   </p>
 </div>
 
-<!-- SUBSTITUTION -->
+<!-- SYNONYMS -->
 <div class="card">
-  <h3>Substitution</h3>
-  <label><input type="checkbox" id="subEnabled" checked> Enable</label>
+  <h3>Synonym Engine</h3>
+  <label><input type="checkbox" id="synEnabled" checked> Enable</label>
 
-  <label>Probability (0–1)</label>
-  <input id="subProb" type="number" step="0.1" value="0.4">
+  <label>Probability</label>
+  <input id="synProb" type="number" step="0.1" value="0.4">
 
-  <label>Word Map (JSON)</label>
-  <textarea id="wordMap" rows="4">
-{"for":"4","to":"2","you":"u","are":"r","and":"n"}
+  <label>Synonym Map (JSON)</label>
+  <textarea id="synMap" rows="5">
+{
+  "site":["site","hub","page","portal"],
+  "web":["web","net","online"],
+  "super":["super","ultra","hyper"]
+}
   </textarea>
+</div>
+
+<!-- CHAR SUBSTITUTION -->
+<div class="card">
+  <h3>Non-Deterministic Character Substitution</h3>
+  <label><input type="checkbox" id="charEnabled" checked> Enable</label>
+
+  <label>Probability</label>
+  <input id="charProb" type="number" step="0.1" value="0.5">
 
   <label>Character Map (JSON)</label>
-  <textarea id="charMap" rows="4">
-{"a":"4","e":"3","i":"1","o":"0","s":"5"}
+  <textarea id="charMap" rows="5">
+{
+  "a":["a","4"],
+  "e":["e","3","€"],
+  "i":["i","1"],
+  "o":["o","0"],
+  "s":["s","5","$","z"]
+}
   </textarea>
 </div>
 
@@ -205,12 +223,9 @@ Human-Readable Structural Polymorphism Engine
 <script type="module">
 import { generateVariants } from './antiRegexName.js';
 
-function safeJSONParse(text, fallback) {
-  try {
-    return JSON.parse(text);
-  } catch {
-    return fallback;
-  }
+function safeJSON(text, fallback) {
+  try { return JSON.parse(text); }
+  catch { return fallback; }
 }
 
 function getConfig() {
@@ -220,9 +235,7 @@ function getConfig() {
     template: {
       enabled: document.getElementById("templateEnabled").checked,
       templates: document.getElementById("templates").value
-        .split(",")
-        .map(t => t.trim())
-        .filter(Boolean)
+        .split(",").map(t=>t.trim()).filter(Boolean)
     },
 
     scramble: {
@@ -232,34 +245,35 @@ function getConfig() {
       fixLast: Number(document.getElementById("fixLast").value)
     },
 
+    synonym: {
+      enabled: document.getElementById("synEnabled").checked,
+      probability: Number(document.getElementById("synProb").value),
+      map: safeJSON(document.getElementById("synMap").value, {})
+    },
+
     substitution: {
-      enabled: document.getElementById("subEnabled").checked,
-      probability: Number(document.getElementById("subProb").value),
-      wordMap: safeJSONParse(document.getElementById("wordMap").value, {}),
-      charMap: safeJSONParse(document.getElementById("charMap").value, {})
+      enabled: document.getElementById("charEnabled").checked,
+      probability: Number(document.getElementById("charProb").value),
+      charMap: safeJSON(document.getElementById("charMap").value, {})
     },
 
     separator: {
       enabled: document.getElementById("sepEnabled").checked,
       separators: document.getElementById("separators").value
-        .split(",")
-        .map(s => s.trim())
-        .filter(Boolean)
+        .split(",").map(s=>s.trim()).filter(Boolean)
     },
 
     casing: {
       enabled: document.getElementById("caseEnabled").checked,
       modes: document.getElementById("caseModes").value
-        .split(",")
-        .map(m => m.trim())
-        .filter(Boolean)
+        .split(",").map(m=>m.trim()).filter(Boolean)
     }
   };
 }
 
-document.getElementById("generateBtn").addEventListener("click", () => {
+document.getElementById("generateBtn").addEventListener("click", ()=>{
   const base = document.getElementById("baseName").value.trim();
-  if (!base) return;
+  if(!base) return;
 
   const config = getConfig();
   const results = generateVariants(base, config);
@@ -268,7 +282,7 @@ document.getElementById("generateBtn").addEventListener("click", () => {
     results.join("\n");
 });
 
-document.getElementById("copyBtn").addEventListener("click", () => {
+document.getElementById("copyBtn").addEventListener("click", ()=>{
   navigator.clipboard.writeText(
     document.getElementById("output").textContent
   );
